@@ -1,0 +1,94 @@
+﻿@model Coletor.Models.ViewModels.SearchFilesViewModel
+@{
+    ViewData["Title"] = "Coleta";
+}
+<section>
+    <h2>@ViewData["Title"]</h2>
+
+    <hr />
+        <form asp-action="SearchFiles" enctype="multipart/form-data" class="my-2">
+            <div class="form-group">
+                    <label asp-for="Collector.InternFile" class="form-label" ></label>
+                    <input asp-for="Collector.InternFile" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                    <label asp-for="Collector.InputPath" class="form-label" ></label>
+                    <input asp-for="Collector.InputPath" class="form-control" placeholder="C:\Temp" />
+                    <span asp-validation-for="Collector.InputPath" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                    <label asp-for="Collector.OutputPath" class="form-label" ></label>
+                    <input asp-for="Collector.OutputPath" class="form-control" placeholder="C:\Temp\Nova pasta"/>
+                    <span asp-validation-for="Collector.OutputPath" class="text-danger"></span>
+            </div>
+            <div class="row  my-2">
+                <!--
+                <div class="col-6">
+                    <fieldset>
+                        <legend>Extensões</legend>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" value="*" id="Type1" name="Type" checked/>
+                            <label class="form-check-label" for="Type1">
+                                * (Qualquer extensão)
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" value=".BIN" id="Type2" name="Type" />
+                             <label class="form-check-label" for="Type2">
+                                    .BIN
+                             </label>
+                         </div>
+                     </fieldset>
+                </div>
+                -->
+
+                <div class="col-6">
+                    <div class="form-group col-3">
+                        <label asp-for="Type" class="form-label" ></label>
+                        <select asp-for="Type" asp-items="@(new SelectList(Model.FileTypes, "Name", "Name"))" class="form-control"> </select>
+                    </div>
+                </div>
+
+
+                <div class="col-6">
+                    <fieldset>
+                        <legend>Subpastas</legend>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="subfolder" name="Subfolder" value="true">
+                            <label class="form-check-label" for="subfolder">ATIVAR</label>
+                        </div>
+                     </fieldset>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Enviar" class="btn btn-primary"/>
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+            </div>
+            
+        </form>
+
+    <h2 class="my-2">Deseja acrescentar alguma extensão?</h2>
+
+    <form asp-action="AddNewFileType">
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            <label asp-for="NewFileTypeName" class="col-sm-3 col-form-label" ></label>
+          </div>
+          <div class="col-auto">
+            <input asp-for="NewFileTypeName" class="col-sm-7 form-control" />  
+          </div>
+          <div class="col-auto">
+            <input type="submit" class="btn btn-primary" value="+"/>
+          </div>
+        </div>
+
+    </form>
+
+
+
+</section>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }

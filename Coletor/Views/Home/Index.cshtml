@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewData["Title"] = "Coletor de Arquivos";
+}
+<section>
+    <div class="text-center row">
+        <h1 class="display-1">Coletor de arquivos</h1>
+        <h4>Programa desenvolvido para auxiliar na coleta de arquivos fornecidos no input.</h4>
+    </div>
+       <hr />
+    <div class="row py-5 text-center">
+
+        <h2 class="text-primary my-5">Como Funciona?</h2>
+
+        <div class="col-xl-4 col-md-6">
+            <div style="height: 100px;" class="d-flex justify-content-center">
+                <img src="~/img/txt-file.png" alt="txt-img">
+            </div>
+            <h4 class="mt-2">(Opc) Carregue o arquivo</h4>
+            <p>Você pode fornecer um txt com os arquivos que você quer copiar, ou simplesmente deixar em branco para buscar todos.</p>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div style="height: 100px;" class="d-flex justify-content-center">
+                <img src="~/img/download.png" alt="input-img">
+            </div>
+            <h4 class="mt-2">Digite um caminho de busca</h4>
+            <p>Selecione um caminho onde deseja procurar esses arquivos</p>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div style="height: 100px;" class="d-flex justify-content-center">
+                <img src="~/img/upload.png" alt="output-img">
+            </div>
+            <h4 class="mt-2">Digite um caminho de destino</h4>
+            <p>Selecione um caminho onde deseja armazenar a cópia destes arquivos</p>
+        </div>
+
+        <h2 class="text-primary my-5">Observações</h2>
+
+        <div class="col-xl-4 col-md-6">
+            <div style="height: 100px;" class="d-flex justify-content-center">
+                <img src="~/img/survey.png" alt="check-img">
+            </div>
+            <h4 class="mt-2">Deve ser fornecido uma extensão</h4>
+            <p>Em cada busca você deverá indicar qual extensão os arquivos devem possuir. É possivel adicionar extensões na lista!</p>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div style="height: 100px;" class="d-flex justify-content-center">
+                <img src="~/img/search.png" alt="search-img">
+            </div>
+            <h4 class="mt-2">Busca aprimorada</h4>
+            <p>Caso seja selecionado no formulário, o sistema também poderá verificar as subpastas do caminho de busca</p>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div style="height: 100px;" class="d-flex justify-content-center">
+                <img src="~/img/transfer.png" alt="transfer-img">
+            </div>
+            <h4 class="mt-2">Cuidado com a pasta destino</h4>
+            <p>Se o arquivo já estiver no diretório destino, ele será sobreescrito</p>
+        </div>
+
+    </div>
+        <div class="text-center">
+        <a asp-controller="Collectors" asp-action="SearchFiles" class="btn btn-primary btn-lg">Iniciar</a>
+    </div>
+</section>
