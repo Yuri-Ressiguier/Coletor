@@ -3,7 +3,8 @@ using Coletor.Models;
 using Coletor.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
-using System.Text;
+using X.PagedList;
+
 
 namespace Coletor.Services
 {
@@ -94,7 +95,7 @@ namespace Coletor.Services
         }
 
         //Entrada do controller.
-        public async Task RegisterDocumentAsync(SearchFilesViewModel vm)
+        public async Task<int> RegisterDocumentAsync(SearchFilesViewModel vm)
         {
             Collector col = vm.Collector;
             if (col.InternFile != null)
@@ -110,43 +111,35 @@ namespace Coletor.Services
                 {
                     await col.InternFile.CopyToAsync(fs);
                     FileInfo existingFile = new FileInfo(filePath);
-                    using (ExcelPackage package = new ExcelPackage(existingFile))
+                    if (existingFile.Exists)
                     {
-                        //get the first worksheet in the workbook
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                        int colCount = worksheet.Dimension.End.Column;  //get Column Count
-                        int rowCount = worksheet.Dimension.End.Row;     //get row count
-                        for (int row = 2; row <= rowCount; row++)
+                        if (!existingFile.Extension.Equals(".xlsx"))
                         {
-                            for (int colx = 1; colx <= colCount; colx++)
+                            throw new ApplicationException("O arquivo fornecido não é um xlsx");
+                        }
+                        using (ExcelPackage package = new ExcelPackage(existingFile))
+                        {
+                            //get the first worksheet in the workbook
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                            int colCount = worksheet.Dimension.End.Column;  //get Column Count
+                            int rowCount = worksheet.Dimension.End.Row;     //get row count
+                            for (int row = 2; row <= rowCount; row++)
                             {
-                                Document doc = new Document(worksheet.Cells[row, colx].Value.ToString().Trim());
-                                FindDocumentsFromList(doc, col, vm.Type, vm.Subfolder);
-                                await _myDbContext.Document.AddAsync(doc);
-                                col.AddDocs(doc);
+                                for (int colx = 1; colx <= colCount; colx++)
+                                {
+                                    Document doc = new Document(worksheet.Cells[row, colx].Value.ToString().Trim());
+                                    FindDocumentsFromList(doc, col, vm.Type, vm.Subfolder);
+                                    await _myDbContext.Document.AddAsync(doc);
+                                    col.AddDocs(doc);
+                                }
                             }
                         }
                     }
-                }
-
-                /*
-                using (FileStream fs = new FileStream(filePath, FileMode.Open))
-                {
-                    using (StreamReader sr = new StreamReader(fs))
+                    else
                     {
-                        while (!sr.EndOfStream)
-                        {
-                            string name = await sr.ReadLineAsync();
-                            Document doc = new Document(name);
-                            FindDocumentsFromList(doc, col, vm.Type, vm.Subfolder);
-                            await _myDbContext.Document.AddAsync(doc);
-                            col.AddDocs(doc);
-                        }
-                        sr.Close();
+                        throw new FileNotFoundException("Arquivo não encontrado", uniqueFileName);
                     }
-                    fs.Close();
                 }
-                */
 
             }
             else
@@ -155,11 +148,13 @@ namespace Coletor.Services
             }
             await _myDbContext.Collector.AddAsync(col);
             await _myDbContext.SaveChangesAsync();
+            await _myDbContext.Entry(col).GetDatabaseValuesAsync();
+            return col.Id;
         }
 
-        public async Task<List<Collector>> FindAllAsync()
+        public async Task<IPagedList<Collector>> FindAllAsync(int page)
         {
-            return await _myDbContext.Collector.ToListAsync();
+            return await _myDbContext.Collector.OrderBy(x => x.Id).ToPagedListAsync(page, 10);
         }
 
         public async Task<Collector> FindByIdAsync(int id)

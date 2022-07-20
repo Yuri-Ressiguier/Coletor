@@ -19,9 +19,9 @@ namespace Coletor.Models
         [NotMapped]
         [Display(Name = "Lista dos Arquivos (Opcional)")]
         public IFormFile? InternFile { get; set; }
-        [Display(Name = "Caminho do Arquivo .txt")]
+        [Display(Name = "Caminho do Arquivo .xlsx")]
         public string? InternFilePath { get; set; }
-        [Display(Name = "Nome do Arquivo .txt")]
+        [Display(Name = "Nome do Arquivo .xlsx")]
         public string? InternFileName { get; set; }
         public List<Document> Documents { get; set; } = new List<Document>();
 

@@ -16,13 +16,14 @@ namespace Coletor.Controllers
             _collectorService = collectorService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var list = await _collectorService.FindAllAsync();
+            var list = await _collectorService.FindAllAsync(page);
             return View(list);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddNewFileType(SearchFilesViewModel vm)
         {
             try
@@ -45,12 +46,13 @@ namespace Coletor.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SearchFiles(SearchFilesViewModel vm)
         {
             try
             {
-                await _collectorService.RegisterDocumentAsync(vm);
-                return RedirectToAction(nameof(Index), "Home");
+                int id = await _collectorService.RegisterDocumentAsync(vm);
+                return RedirectToAction("Details", new {Id = id});
             }
             catch (Exception e)
             {
@@ -70,25 +72,35 @@ namespace Coletor.Controllers
             var obj = await _collectorService.FindByIdAsync(id.Value);
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Não encontrado" });
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
             }
             return View(obj);
         }
 
-        public async Task<FileResult> Download(int? id)
+
+        public async Task<IActionResult> Download(int? id)
         {
             if (id == null)
             {
-                NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id não fornecido" });
             }
 
             var obj = await _collectorService.FindByIdAsync(id.Value);
             if (obj == null)
             {
-                NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
+
             }
-            var fileBytes = System.IO.File.ReadAllBytes(obj.InternFilePath);
-            return File(fileBytes, "Application/vnd.openxmlformats-officedocument.spreadsheetml.template", obj.InternFileName);
+            try
+            {
+                var fileBytes = System.IO.File.ReadAllBytes(obj.InternFilePath);
+                return File(fileBytes, "Application/vnd.openxmlformats-officedocument.spreadsheetml.template", obj.InternFileName);
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
+
         }
 
         public IActionResult Error(string message)
