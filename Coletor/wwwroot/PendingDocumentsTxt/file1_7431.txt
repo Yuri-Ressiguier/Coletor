@@ -1,5 +1,0 @@
-museu.pdf
-texto.txt
-TreinamentoWeb.png
-ntem.txt
-sub.txt

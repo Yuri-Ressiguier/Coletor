@@ -88,7 +88,7 @@ namespace Coletor.Controllers
                 NotFound();
             }
             var fileBytes = System.IO.File.ReadAllBytes(obj.InternFilePath);
-            return File(fileBytes, "text/plain", obj.InternFileName);
+            return File(fileBytes, "Application/vnd.openxmlformats-officedocument.spreadsheetml.template", obj.InternFileName);
         }
 
         public IActionResult Error(string message)

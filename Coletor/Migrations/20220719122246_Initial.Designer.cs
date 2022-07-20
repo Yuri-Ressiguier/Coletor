@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Coletor.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20220718140526_Initial")]
+    [Migration("20220719122246_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

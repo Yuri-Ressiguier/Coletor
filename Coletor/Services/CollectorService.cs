@@ -2,6 +2,7 @@
 using Coletor.Models;
 using Coletor.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System.Text;
 
 namespace Coletor.Services
@@ -64,14 +65,14 @@ namespace Coletor.Services
             if (subfolder)
             {
                 file = new DirectoryInfo(col.InputPath).EnumerateFiles("*" + type, SearchOption.AllDirectories)
-               .Where(x => x.Name.Equals(doc.Name + type.ToLower()) && !x.DirectoryName
+               .Where(x => x.Name.Equals(doc.Name) && !x.DirectoryName
                .Equals(col.OutputPath))
                .FirstOrDefault();
             }
             else
             {
                 file = new DirectoryInfo(col.InputPath).EnumerateFiles("*" + type, SearchOption.TopDirectoryOnly)
-               .Where(x => x.Name.Equals(doc.Name + type.ToLower()) && !x.DirectoryName
+               .Where(x => x.Name.Equals(doc.Name) && !x.DirectoryName
                .Equals(col.OutputPath))
                .FirstOrDefault();
             }
@@ -108,7 +109,27 @@ namespace Coletor.Services
                 using (FileStream fs = new FileStream(filePath, FileMode.Create))
                 {
                     await col.InternFile.CopyToAsync(fs);
+                    FileInfo existingFile = new FileInfo(filePath);
+                    using (ExcelPackage package = new ExcelPackage(existingFile))
+                    {
+                        //get the first worksheet in the workbook
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        int colCount = worksheet.Dimension.End.Column;  //get Column Count
+                        int rowCount = worksheet.Dimension.End.Row;     //get row count
+                        for (int row = 2; row <= rowCount; row++)
+                        {
+                            for (int colx = 1; colx <= colCount; colx++)
+                            {
+                                Document doc = new Document(worksheet.Cells[row, colx].Value.ToString().Trim());
+                                FindDocumentsFromList(doc, col, vm.Type, vm.Subfolder);
+                                await _myDbContext.Document.AddAsync(doc);
+                                col.AddDocs(doc);
+                            }
+                        }
+                    }
                 }
+
+                /*
                 using (FileStream fs = new FileStream(filePath, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(fs))
@@ -125,6 +146,7 @@ namespace Coletor.Services
                     }
                     fs.Close();
                 }
+                */
 
             }
             else
