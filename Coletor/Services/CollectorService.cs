@@ -65,15 +65,15 @@ namespace Coletor.Services
 
             if (subfolder)
             {
-                file = new DirectoryInfo(col.InputPath).EnumerateFiles("*" + type, SearchOption.AllDirectories)
-               .Where(x => x.Name.Equals(doc.Name) && !x.DirectoryName
+                file = new DirectoryInfo(col.InputPath).EnumerateFiles(doc.Name, SearchOption.AllDirectories)
+               .Where(x => !x.DirectoryName
                .Equals(col.OutputPath))
                .FirstOrDefault();
             }
             else
             {
-                file = new DirectoryInfo(col.InputPath).EnumerateFiles("*" + type, SearchOption.TopDirectoryOnly)
-               .Where(x => x.Name.Equals(doc.Name) && !x.DirectoryName
+                file = new DirectoryInfo(col.InputPath).EnumerateFiles(doc.Name, SearchOption.TopDirectoryOnly)
+               .Where(x => !x.DirectoryName
                .Equals(col.OutputPath))
                .FirstOrDefault();
             }
@@ -170,7 +170,7 @@ namespace Coletor.Services
 
         public async Task AddFileType(string newFileTypeName)
         {
-            await _myDbContext.FileType.AddAsync(new FileType(newFileTypeName.ToUpper()));
+            await _myDbContext.FileType.AddAsync(new FileType(newFileTypeName));
             await _myDbContext.SaveChangesAsync();
         }
 
